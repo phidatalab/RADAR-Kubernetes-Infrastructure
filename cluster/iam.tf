@@ -145,7 +145,15 @@ resource "aws_iam_policy" "ecr_access" {
           "ecr:GetLifecyclePolicy",
           "ecr:GetLifecyclePolicyPreview",
           "ecr:ListTagsForResource",
-          "ecr:DescribeImageScanFindings"
+          "ecr:DescribeImageScanFindings",
+          "ecr:PutImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:DeleteRepository",
+          "ecr:BatchDeleteImage",
+          "ecr:SetRepositoryPolicy",
+          "ecr:DeleteRepositoryPolicy"
         ]
         Resource = [
           for repository_name in var.ecr_repository_names : "arn:aws:ecr:::repository/${repository_name}"
@@ -171,6 +179,11 @@ resource "aws_iam_policy" "ecr_pull_through_cache" {
           "ecr:CreateRepository"
         ]
         Resource = "*"
+      },
+      {
+        "Action" : ["secretsmanager:GetSecretValue"],
+        "Effect" : "Allow",
+        "Resource" : "arn:aws:secretsmanager:${var.AWS_REGION}::secret:ecr-pullthroughcache/radar-base-docker-hub*"
       }
     ]
   })
